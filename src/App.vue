@@ -1,8 +1,13 @@
 <template>
   <div id="app">
     <div class="scroll-mask" style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;z-index:10000;">
-      <div v-show="!loading" class="play-btn" @touchstart="onTouchPlay" @touchend="onTouchPause"></div>
+      <div class="bottom-btn" @touchstart="restart" :style="{top: this.btnTop || '100%'}"></div>
+      <div class="bottom-btn" @touchstart="shareGuideVisible = true" :style="{top: this.btnTop || '100%'}"></div>
+      <div v-show="!loading && !isReachedBottom" class="play-btn" @touchstart="onTouchPlay" @touchend="onTouchPause"></div>
       <div v-show="!loading" class="audio-control" :class="{'audio-on': isAudioPlaying}" @touchstart="toggleAudio"></div>
+    </div>
+    <div class="share-mask" v-show="shareGuideVisible" @touchstart="shareGuideVisible = false">
+      <img src="./assets/img/share-guide.png" alt="">
     </div>
     <div class="app-loading" v-show="loading">
       <div class="app-loading-bg"></div>
@@ -11,7 +16,7 @@
         <div class="progress__inner" :style="{width: progress * 6.306666666666667 + 'rem'}"></div>
       </div>
     </div>
-    <div class="app-bg" :class="{'user-touched': reqAnimation !== undefined}" :style="bgStyle" v-show="!loading">
+    <div class="app-bg" :class="{'user-touched': reqAnimation !== undefined}" :style="bgStyle" v-show="!loading" ref="bgContainer">
       <img src="./assets/img/app-bg.jpg" alt="">
       <x-sprit
         v-for="(sprit, index) in sprits"
@@ -99,6 +104,9 @@ export default {
   data () {
     return {
       dev: false,
+      btnTop: '100%',
+      isReachedBottom: false,
+      shareGuideVisible: false,
       reqAnimation: undefined,
       appPlaying: false,
       isAudioPlaying: false,
@@ -114,7 +122,7 @@ export default {
     bgStyle () {
       return {
         width: '10rem',
-        height: '129.54666666666665rem',
+        height: '132.48rem',
         transition: 'all 1s cubic-bezier(0.6, 0.2, 0.1, 1)'
       }
     },
@@ -345,9 +353,15 @@ export default {
       const diff = currTime - lastTime
       const speed = 50
       const delta = 2.8 || Math.round(diff / 1000 * speed < 1 ? 1 : (diff / 1000 * speed))
-      // console.log('delta: ' + delta)
       window.scrollTo(0, scrollY + delta)
-      // debugger
+      this.updateBottomPosition()
+      // 检测是否滚到底了
+      if (window.scrollY + window.innerHeight >= this.$refs.bgContainer.offsetHeight) {
+        this.isReachedBottom = true
+        this.reqAnimation = null
+        this.appPlaying = false
+        return
+      }
       if (this.appPlaying) {
         lastTime = currTime
         this.reqAnimation = requestAnimationFrame(this.play)
@@ -366,6 +380,16 @@ export default {
       } else {
         this.$refs.audio.play()
       }
+    },
+    restart () {
+      window.scrollTo(0, 0)
+      this.updateBottomPosition()
+      this.isReachedBottom = false
+    },
+    updateBottomPosition () {
+      const ratio = this.$refs.bgContainer.offsetWidth / 750
+      const posTop = 9655 * ratio - window.scrollY
+      this.btnTop = posTop + 'px'
     }
   },
   components: {
@@ -458,6 +482,35 @@ export default {
   width: 10rem;
   height: 100%;
   background: url('./assets/img/app-bg-loading.jpg') top center / 100% auto no-repeat;
+}
+.bottom-btn {
+  position: absolute;
+  padding: 0.5rem;
+  right: 0.8rem;
+  height: 1.28rem;
+  width: 3.8rem;
+  /* border: 1px solid black;
+  background: rgba(0,0,0,.14); */
+}
+.bottom-btn:first-child {
+  right: auto;
+  left: 1.1066666666666667rem;
+}
+.share-mask {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.70);
+  z-index: 10001;
+}
+.share-mask img {
+  width: 5.56rem;
+  position: absolute;
+  right: 0.5733333333333334rem;
+  top: 0.9333333333333333rem;
 }
 </style>
 
