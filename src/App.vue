@@ -84,14 +84,21 @@ autoPlayMusic()
 
 let lastTime = 0
 
-const apiUrl = '//120.79.21.200:85/'
+const apiUrl = '//api.sc.shouyouhuyu.com'
 let api_token = ''
+const shareTitle = 'jasper这样的儿子，请给我来一打！'
+const shareDesc = '小编能想到最幸糊的事就是早上醒来，空气清新，jasper对我露出天使般的笑…'
+const shareUrl = location.href
+const shareImg = location.origin + '/static/img/wx_share.jpg'
+const shareImgWB = location.origin + '/static/img/wx_share2.jpg'
+console.log('shareUrl: ' + shareUrl)
+console.log('shareImg: ' + shareImg)
 let wxSignData = null
 
 export default {
   data () {
     return {
-      dev: true,
+      dev: false,
       reqAnimation: undefined,
       appPlaying: false,
       isAudioPlaying: false,
@@ -226,7 +233,7 @@ export default {
         url: apiUrl + '/api/share_sign',
         method: 'post',
         data: {
-          url: location.href
+          url: shareUrl
         },
         headers: {
           Authorization: token,
@@ -235,11 +242,11 @@ export default {
       })).then(res => {
         wxSignData = res.data.data
         const options = {
-          debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
           appId: wxSignData.appId, // 必填，企业号的唯一标识，此处填写企业号corpid
           timestamp: wxSignData.timestamp, // 必填，生成签名的时间戳
           nonceStr: wxSignData.nonceStr, // 必填，生成签名的随机串
-          signature: wxSignData.signature,// 必填，签名，见附录1
+          signature: wxSignData.signature, // 必填，签名，见附录1
           jsApiList: [
             'onMenuShareTimeline',
             'onMenuShareAppMessage',
@@ -248,8 +255,7 @@ export default {
             'onMenuShareQZone'
           ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
         }
-        console.log('wx.config, ', options)
-        wx.config(options);
+        wx.config(options)
       })
       wx.error(err => {
         console.error(err)
@@ -257,22 +263,22 @@ export default {
       wx.ready(() => {
         // “分享到朋友圈”
         wx.onMenuShareTimeline({
-          title: '123', // 分享标题
-          link: '123', // 分享链接，该链接域名必须与当前企业的可信域名一致
-          imgUrl: '123', // 分享图标
+          title: shareTitle, // 分享标题
+          link: shareUrl, // 分享链接，该链接域名必须与当前企业的可信域名一致
+          imgUrl: shareImg, // 分享图标
           success: function () {
               // 用户确认分享后执行的回调函数
           },
           cancel: function () {
               // 用户取消分享后执行的回调函数
           }
-        });
+        })
         // “分享给朋友”
         wx.onMenuShareAppMessage({
-          title: '123', // 分享标题
-          desc: 'desc', // 分享描述
-          link: 'http:' + apiUrl + '/sdf', // 分享链接，该链接域名必须与当前企业的可信域名一致
-          imgUrl: '', // 分享图标
+          title: shareTitle, // 分享标题
+          desc: shareDesc, // 分享描述
+          link: shareUrl, // 分享链接，该链接域名必须与当前企业的可信域名一致
+          imgUrl: shareImg, // 分享图标
           type: 'link', // 分享类型,music、video或link，不填默认为link
           dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
           success: function () {
@@ -281,46 +287,46 @@ export default {
           cancel: function () {
               // 用户取消分享后执行的回调函数
           }
-        });
+        })
         // “分享到QQ”
         wx.onMenuShareQQ({
-          title: '', // 分享标题
-          desc: '', // 分享描述
-          link: '', // 分享链接
-          imgUrl: '', // 分享图标
+          title: shareTitle, // 分享标题
+          desc: shareDesc, // 分享描述
+          link: shareUrl, // 分享链接
+          imgUrl: shareImg, // 分享图标
           success: function () {
             // 用户确认分享后执行的回调函数
           },
           cancel: function () {
             // 用户取消分享后执行的回调函数
           }
-        });
+        })
         // “分享到腾讯微博”
         wx.onMenuShareWeibo({
-          title: '', // 分享标题
-          desc: '', // 分享描述
-          link: '', // 分享链接
-          imgUrl: '', // 分享图标
+          title: shareTitle, // 分享标题
+          desc: shareDesc, // 分享描述
+          link: shareUrl, // 分享链接
+          imgUrl: shareImgWB, // 分享图标
           success: function () {
             // 用户确认分享后执行的回调函数
           },
           cancel: function () {
               // 用户取消分享后执行的回调函数
           }
-        });
+        })
         // “分享到QQ空间”
         wx.onMenuShareQZone({
-          title: '', // 分享标题
-          desc: '', // 分享描述
-          link: '', // 分享链接
-          imgUrl: '', // 分享图标
+          title: shareTitle, // 分享标题
+          desc: shareDesc, // 分享描述
+          link: shareUrl, // 分享链接，该链接域名必须与当前企业的可信域名一致
+          imgUrl: shareImg, // 分享图标
           success: function () {
             // 用户确认分享后执行的回调函数
           },
           cancel: function () {
               // 用户取消分享后执行的回调函数
           }
-        });
+        })
       })
     },
     onTouchPlay () {
