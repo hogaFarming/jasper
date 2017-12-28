@@ -385,6 +385,7 @@ export default {
       window.scrollTo(0, 0)
       this.updateBottomPosition()
       this.isReachedBottom = false
+      this.reqAnimation = undefined
     },
     updateBottomPosition () {
       const ratio = this.$refs.bgContainer.offsetWidth / 750
@@ -455,17 +456,17 @@ export default {
 }
 #sprit-3 {
   opacity: 0;
-  transition: all 1s cubic-bezier(0.6, 0.2, 0.1, 1);
 }
 .user-touched #sprit-3 {
   opacity: 1;
+  transition: all 1s cubic-bezier(0.6, 0.2, 0.1, 1);
 }
 #sprit-201 {
   opacity: 0;
-  transition: all 1s cubic-bezier(0.6, 0.2, 0.1, 1) 0.4s;
 }
 .user-touched #sprit-201 {
   opacity: 1;
+  transition: all 1s cubic-bezier(0.6, 0.2, 0.1, 1) 0.4s;
 }
 .app-loading {
   overflow: hidden;
